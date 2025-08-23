@@ -2,6 +2,7 @@
 
 import { getFirebase } from './firebase.js';
 import { toast } from '../utils/helpers.js';
+import { createOrUpdateUser, setCurrentUserProfile } from './users.js';
 
 /**
  * Estado del usuario autenticado
@@ -59,6 +60,15 @@ export async function handleGoogleSignIn() {
   
   try {
     const result = await signInWithPopup(Firebase.auth, Firebase.providers.google);
+    
+    // Crear/actualizar perfil del usuario en la base de datos
+    const userProfile = await createOrUpdateUser({
+      uid: result.user.uid,
+      displayName: result.user.displayName || 'Usuario',
+      email: result.user.email,
+      photoURL: result.user.photoURL
+    });
+    
     const user = {
       id: result.user.uid,
       displayName: result.user.displayName || 'Usuario',
@@ -67,7 +77,10 @@ export async function handleGoogleSignIn() {
       mode: 'firebase'
     };
     
+    // Establecer usuario actual y perfil
     setCurrentUser(user);
+    setCurrentUserProfile(userProfile);
+    
     toast(`¡Bienvenido, ${user.displayName}!`);
     return user;
   } catch (error) {

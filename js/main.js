@@ -16,6 +16,12 @@ import {
   onTasksChange 
 } from './modules/tasks.js';
 import { 
+  loadUsers, 
+  onUsersChange, 
+  searchUsers,
+  setupUserSearch 
+} from './modules/users.js';
+import { 
   initUI, 
   renderNavUser, 
   renderTasks, 
@@ -27,7 +33,9 @@ import {
   getTaskDueDate,
   setLoadingState,
   updatePageTitle,
-  renderWelcomeMessage
+  renderWelcomeMessage,
+  renderUsers,
+  setupUserSearch
 } from './modules/ui.js';
 import { $ } from './utils/helpers.js';
 
@@ -126,6 +134,17 @@ class AgendaApp {
       renderTasks();
       this.updateTaskCount(tasks.length);
     });
+
+    // Listener de cambios en usuarios
+    onUsersChange((users) => {
+      renderUsers(users);
+    });
+
+    // Configurar búsqueda de usuarios
+    setupUserSearch((query) => {
+      const filteredUsers = searchUsers(query);
+      renderUsers(filteredUsers);
+    });
   }
 
   /**
@@ -184,6 +203,9 @@ class AgendaApp {
       
       // Cargar tareas del usuario
       this.loadUserTasks();
+      
+      // Cargar usuarios del sistema
+      this.loadSystemUsers();
       
       // Mostrar mensaje de bienvenida
       const welcomeContainer = $('#welcome-message');
@@ -292,6 +314,19 @@ class AgendaApp {
     const taskCountElement = $('#task-count');
     if (taskCountElement) {
       taskCountElement.textContent = count;
+    }
+  }
+
+  /**
+   * Carga los usuarios del sistema
+   */
+  async loadSystemUsers() {
+    try {
+      await loadUsers();
+      console.log('👥 Usuarios del sistema cargados');
+    } catch (error) {
+      console.error('Error al cargar usuarios del sistema:', error);
+      this.showError('Error al cargar usuarios del sistema');
     }
   }
 

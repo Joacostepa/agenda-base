@@ -330,3 +330,108 @@ export function renderWelcomeMessage(container) {
     </div>
   `;
 }
+
+/**
+ * Renderiza la lista de usuarios del sistema
+ * @param {Array} users - Lista de usuarios a renderizar
+ */
+export function renderUsers(users) {
+  const usersList = $('#users-list');
+  const usersEmptyState = $('#users-empty-state');
+  const userCount = $('#user-count');
+  
+  if (!usersList || !usersEmptyState || !userCount) return;
+  
+  // Actualizar contador
+  userCount.textContent = `(${users.length})`;
+  
+  // Limpiar lista actual
+  usersList.innerHTML = '';
+  
+  // Mostrar estado vacío si no hay usuarios
+  if (!users || users.length === 0) {
+    usersEmptyState.classList.remove('hidden');
+    return;
+  }
+  
+  // Ocultar estado vacío
+  usersEmptyState.classList.add('hidden');
+  
+  // Renderizar cada usuario
+  users.forEach(user => {
+    const userElement = createUserElement(user);
+    usersList.appendChild(userElement);
+  });
+}
+
+/**
+ * Crea un elemento DOM para un usuario individual
+ * @param {Object} user - Objeto usuario
+ * @returns {HTMLElement} Elemento DOM del usuario
+ */
+function createUserElement(user) {
+  const div = document.createElement('div');
+  div.className = 'flex items-center justify-between gap-4 p-6 hover:bg-gray-50 transition-colors';
+  
+  // Información del usuario
+  const userInfo = document.createElement('div');
+  userInfo.className = 'flex items-center gap-4';
+  
+  // Avatar del usuario
+  const avatar = document.createElement('img');
+  avatar.src = user.photoURL || `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(user.displayName)}`;
+  avatar.alt = `Avatar de ${user.displayName}`;
+  avatar.className = 'h-12 w-12 rounded-full ring-2 ring-white object-cover';
+  
+  // Detalles del usuario
+  const details = document.createElement('div');
+  details.className = 'flex-1';
+  
+  const name = document.createElement('h4');
+  name.className = 'font-medium text-gray-900';
+  name.textContent = user.displayName;
+  
+  const email = document.createElement('p');
+  email.className = 'text-sm text-gray-500';
+  email.textContent = user.email;
+  
+  const status = document.createElement('div');
+  status.className = 'flex items-center gap-2 mt-1';
+  
+  const statusDot = document.createElement('div');
+  statusDot.className = `w-2 h-2 rounded-full ${user.isActive ? 'bg-green-500' : 'bg-gray-400'}`;
+  
+  const statusText = document.createElement('span');
+  statusText.className = 'text-xs text-gray-500';
+  statusText.textContent = user.isActive ? 'Activo' : 'Inactivo';
+  
+  status.append(statusDot, statusText);
+  details.append(name, email, status);
+  userInfo.append(avatar, details);
+  
+  // Fecha de registro
+  const registrationDate = document.createElement('div');
+  registrationDate.className = 'text-right text-sm text-gray-500';
+  registrationDate.textContent = new Date(user.createdAt).toLocaleDateString('es-AR', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+  
+  div.append(userInfo, registrationDate);
+  return div;
+}
+
+/**
+ * Configura la búsqueda de usuarios
+ * @param {Function} onSearch - Función a ejecutar cuando cambie la búsqueda
+ */
+export function setupUserSearch(onSearch) {
+  const searchInput = $('#user-search');
+  if (!searchInput) return;
+  
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    onSearch(query);
+  });
+}
