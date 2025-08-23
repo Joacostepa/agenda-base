@@ -23,6 +23,8 @@ import {
   showApp, 
   clearTaskInput,
   getTaskInputValue,
+  clearTaskDueDate,
+  getTaskDueDate,
   setLoadingState,
   updatePageTitle,
   renderWelcomeMessage
