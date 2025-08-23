@@ -141,10 +141,9 @@ export async function loadTasks() {
  * @param {string|null} dueDate - Fecha de vencimiento (opcional)
  * @param {string} category - Categoría de la tarea (opcional)
  * @param {string} priority - Prioridad de la tarea (opcional)
- * @param {string} status - Estado de la tarea (opcional)
  * @returns {Promise<Object>} Tarea creada
  */
-export async function addTask(title, dueDate = null, category = 'other', priority = 'medium', status = 'pending') {
+export async function addTask(title, dueDate = null, category = 'other', priority = 'medium') {
   const userId = getCurrentUserId();
   const mode = getCurrentUserMode();
   
@@ -160,10 +159,10 @@ export async function addTask(title, dueDate = null, category = 'other', priorit
     let newTask;
     
     if (mode === 'guest') {
-      newTask = localStore.add(userId, title.trim(), dueDate, category, priority, status);
+      newTask = localStore.add(userId, title.trim(), dueDate, category, priority, 'pending');
       tasks.unshift(newTask);
     } else if (mode === 'firebase') {
-      newTask = await addFirestoreTask(userId, title.trim(), dueDate, category, priority, status);
+      newTask = await addFirestoreTask(userId, title.trim(), dueDate, category, priority, 'pending');
       tasks.unshift(newTask);
     }
     

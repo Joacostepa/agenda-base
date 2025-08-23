@@ -30,7 +30,6 @@ export const TASK_PRIORITIES = [
  */
 export const TASK_STATUSES = [
   { id: 'pending', name: 'Pendiente', color: 'bg-gray-400', icon: '⏳' },
-  { id: 'in-progress', name: 'En Progreso', color: 'bg-blue-500', icon: '🔄' },
   { id: 'completed', name: 'Completada', color: 'bg-green-500', icon: '✅' },
   { id: 'cancelled', name: 'Cancelada', color: 'bg-red-400', icon: '❌' }
 ];

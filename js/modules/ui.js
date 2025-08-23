@@ -286,11 +286,9 @@ export function clearTaskForm() {
   // Resetear selects a valores por defecto
   const categorySelect = $('#task-category');
   const prioritySelect = $('#task-priority');
-  const statusSelect = $('#task-status');
   
   if (categorySelect) categorySelect.value = 'other';
   if (prioritySelect) prioritySelect.value = 'medium';
-  if (statusSelect) statusSelect.value = 'pending';
 }
 
 /**
@@ -330,14 +328,7 @@ export function getTaskPriority() {
   return prioritySelect ? prioritySelect.value : 'medium';
 }
 
-/**
- * Obtiene el valor del campo de estado
- * @returns {string} Valor del estado
- */
-export function getTaskStatus() {
-  const statusSelect = $('#task-status');
-  return statusSelect ? statusSelect.value : 'pending';
-}
+
 
 /**
  * Muestra un mensaje de error en el campo de entrada

@@ -52,10 +52,9 @@ export class LocalStore {
    * @param {string|null} dueDate - Fecha de vencimiento (opcional)
    * @param {string} category - Categoría de la tarea (opcional)
    * @param {string} priority - Prioridad de la tarea (opcional)
-   * @param {string} status - Estado de la tarea (opcional)
    * @returns {Object} Tarea creada
    */
-  add(userId, title, dueDate = null, category = 'other', priority = 'medium', status = 'pending') {
+  add(userId, title, dueDate = null, category = 'other', priority = 'medium') {
     const tasks = this.load(userId);
     const item = {
       id: this._generateId(),
@@ -65,7 +64,7 @@ export class LocalStore {
       dueDate: dueDate ? new Date(dueDate).getTime() : null,
       category,
       priority,
-      status
+      status: 'pending'
     };
     tasks.unshift(item);
     this.save(userId, tasks);

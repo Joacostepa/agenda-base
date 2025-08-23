@@ -32,7 +32,6 @@ import {
   getTaskDueDate,
   getTaskCategory,
   getTaskPriority,
-  getTaskStatus,
   clearTaskForm,
   setLoadingState,
   updatePageTitle,
@@ -266,7 +265,6 @@ class AgendaApp {
       const dueDate = getTaskDueDate();
       const category = getTaskCategory();
       const priority = getTaskPriority();
-      const status = getTaskStatus();
       
       if (!title || title.trim().length === 0) {
         this.showInputError('El título de la tarea no puede estar vacío');
@@ -274,7 +272,7 @@ class AgendaApp {
       }
 
       setLoadingState(true);
-      await addTask(title.trim(), dueDate, category, priority, status);
+      await addTask(title.trim(), dueDate, category, priority);
       clearTaskInput();
       clearTaskDueDate();
       clearTaskForm();
