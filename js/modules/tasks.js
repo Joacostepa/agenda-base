@@ -10,6 +10,14 @@ import {
 } from './firebase.js';
 import { getCurrentUserId, getCurrentUserMode } from './auth.js';
 import { toast } from '../utils/helpers.js';
+import { 
+  TASK_CATEGORIES, 
+  TASK_PRIORITIES, 
+  TASK_STATUSES,
+  getCategoryById,
+  getPriorityById,
+  getStatusById
+} from '../config/taskConfig.js';
 
 /**
  * Estado global de las tareas
@@ -32,6 +40,50 @@ const tasksChangeCallbacks = [];
  */
 export function getTasks() {
   return [...tasks];
+}
+
+/**
+ * Obtiene tareas filtradas por categoría
+ * @param {string} category - ID de la categoría
+ * @returns {Array} Lista de tareas filtradas
+ */
+export function getTasksByCategory(category) {
+  return tasks.filter(task => task.category === category);
+}
+
+/**
+ * Obtiene tareas filtradas por prioridad
+ * @param {string} priority - ID de la prioridad
+ * @returns {Array} Lista de tareas filtradas
+ */
+export function getTasksByPriority(priority) {
+  return tasks.filter(task => task.priority === priority);
+}
+
+/**
+ * Obtiene tareas filtradas por estado
+ * @param {string} status - ID del estado
+ * @returns {Array} Lista de tareas filtradas
+ */
+export function getTasksByStatus(status) {
+  return tasks.filter(task => task.status === status);
+}
+
+/**
+ * Obtiene tareas con búsqueda por texto
+ * @param {string} searchText - Texto a buscar
+ * @returns {Array} Lista de tareas que coinciden
+ */
+export function searchTasks(searchText) {
+  if (!searchText || searchText.trim().length === 0) {
+    return [...tasks];
+  }
+  
+  const query = searchText.toLowerCase().trim();
+  return tasks.filter(task => 
+    task.title.toLowerCase().includes(query) ||
+    (task.description && task.description.toLowerCase().includes(query))
+  );
 }
 
 /**
@@ -87,9 +139,12 @@ export async function loadTasks() {
  * Agrega una nueva tarea
  * @param {string} title - Título de la tarea
  * @param {string|null} dueDate - Fecha de vencimiento (opcional)
+ * @param {string} category - Categoría de la tarea (opcional)
+ * @param {string} priority - Prioridad de la tarea (opcional)
+ * @param {string} status - Estado de la tarea (opcional)
  * @returns {Promise<Object>} Tarea creada
  */
-export async function addTask(title, dueDate = null) {
+export async function addTask(title, dueDate = null, category = 'other', priority = 'medium', status = 'pending') {
   const userId = getCurrentUserId();
   const mode = getCurrentUserMode();
   
@@ -105,10 +160,10 @@ export async function addTask(title, dueDate = null) {
     let newTask;
     
     if (mode === 'guest') {
-      newTask = localStore.add(userId, title.trim(), dueDate);
+      newTask = localStore.add(userId, title.trim(), dueDate, category, priority, status);
       tasks.unshift(newTask);
     } else if (mode === 'firebase') {
-      newTask = await addFirestoreTask(userId, title.trim(), dueDate);
+      newTask = await addFirestoreTask(userId, title.trim(), dueDate, category, priority, status);
       tasks.unshift(newTask);
     }
     
@@ -166,6 +221,54 @@ export async function toggleTask(id) {
   } catch (error) {
     console.error('Error al cambiar estado de tarea:', error);
     toast('Error al cambiar el estado de la tarea');
+    throw error;
+  }
+}
+
+/**
+ * Actualiza una tarea existente
+ * @param {string} id - ID de la tarea
+ * @param {Object} updates - Campos a actualizar
+ * @returns {Promise<Object|null>} Tarea actualizada o null si no se encuentra
+ */
+export async function updateTask(id, updates) {
+  const userId = getCurrentUserId();
+  const mode = getCurrentUserMode();
+  
+  if (!userId || !mode) {
+    throw new Error('Usuario no autenticado');
+  }
+
+  try {
+    let updatedTask;
+    
+    if (mode === 'guest') {
+      updatedTask = localStore.update(userId, id, updates);
+      if (updatedTask) {
+        const index = tasks.findIndex(t => t.id === id);
+        if (index > -1) {
+          tasks[index] = updatedTask;
+        }
+      }
+    } else if (mode === 'firebase') {
+      updatedTask = await updateFirestoreTask(userId, id, updates);
+      if (updatedTask) {
+        const index = tasks.findIndex(t => t.id === id);
+        if (index > -1) {
+          tasks[index] = updatedTask;
+        }
+      }
+    }
+    
+    if (updatedTask) {
+      notifyTasksChange();
+      toast('Tarea actualizada correctamente');
+    }
+    
+    return updatedTask;
+  } catch (error) {
+    console.error('Error al actualizar tarea:', error);
+    toast('Error al actualizar la tarea');
     throw error;
   }
 }

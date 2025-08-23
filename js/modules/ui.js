@@ -3,6 +3,7 @@
 import { $ } from '../utils/helpers.js';
 import { getCurrentUser, getCurrentUserDisplayName, getCurrentUserPhotoURL } from './auth.js';
 import { getTasks, getTasksStats } from './tasks.js';
+import { getCategoryById, getPriorityById, getStatusById } from '../config/taskConfig.js';
 
 /**
  * Elementos DOM principales
@@ -116,6 +117,37 @@ function createTaskElement(task) {
   title.className = `text-sm flex-1 ${task.done ? 'line-through text-gray-400' : ''}`;
   title.textContent = task.title;
   
+  // Contenedor para metadatos de la tarea
+  const metadata = document.createElement('div');
+  metadata.className = 'flex items-center gap-2 mt-1';
+  
+  // Categoría
+  if (task.category && task.category !== 'other') {
+    const category = document.createElement('span');
+    const categoryConfig = getCategoryById(task.category);
+    category.className = `text-xs px-2 py-1 rounded-full ${categoryConfig.color} text-white`;
+    category.textContent = `${categoryConfig.icon} ${categoryConfig.name}`;
+    metadata.appendChild(category);
+  }
+  
+  // Prioridad
+  if (task.priority && task.priority !== 'medium') {
+    const priority = document.createElement('span');
+    const priorityConfig = getPriorityById(task.priority);
+    priority.className = `text-xs px-2 py-1 rounded-full ${priorityConfig.color} text-white`;
+    priority.textContent = `${priorityConfig.icon} ${priorityConfig.name}`;
+    metadata.appendChild(priority);
+  }
+  
+  // Estado
+  if (task.status && task.status !== 'pending') {
+    const status = document.createElement('span');
+    const statusConfig = getStatusById(task.status);
+    status.className = `text-xs px-2 py-1 rounded-full ${statusConfig.color} text-white`;
+    status.textContent = `${statusConfig.icon} ${statusConfig.name}`;
+    metadata.appendChild(status);
+  }
+  
   // Fecha de vencimiento (si existe)
   if (task.dueDate) {
     const dueDate = document.createElement('span');
@@ -134,9 +166,13 @@ function createTaskElement(task) {
       day: 'numeric'
     });
     
-    left.append(checkbox, title, dueDate);
-  } else {
-    left.append(checkbox, title);
+    metadata.appendChild(dueDate);
+  }
+  
+  // Agregar metadatos al contenedor izquierdo
+  left.append(checkbox, title);
+  if (metadata.children.length > 0) {
+    left.appendChild(metadata);
   }
   
   // Botón eliminar
@@ -243,6 +279,23 @@ export function setTaskInputValue(value) {
 /**
  * Limpia el campo de fecha de vencimiento
  */
+export function clearTaskForm() {
+  clearTaskInput();
+  clearTaskDueDate();
+  
+  // Resetear selects a valores por defecto
+  const categorySelect = $('#task-category');
+  const prioritySelect = $('#task-priority');
+  const statusSelect = $('#task-status');
+  
+  if (categorySelect) categorySelect.value = 'other';
+  if (prioritySelect) prioritySelect.value = 'medium';
+  if (statusSelect) statusSelect.value = 'pending';
+}
+
+/**
+ * Limpia el campo de fecha de vencimiento
+ */
 export function clearTaskDueDate() {
   const dueDateInput = $('#task-due-date');
   if (dueDateInput) {
@@ -257,6 +310,33 @@ export function clearTaskDueDate() {
 export function getTaskDueDate() {
   const dueDateInput = $('#task-due-date');
   return dueDateInput ? dueDateInput.value : '';
+}
+
+/**
+ * Obtiene el valor del campo de categoría
+ * @returns {string} Valor de la categoría
+ */
+export function getTaskCategory() {
+  const categorySelect = $('#task-category');
+  return categorySelect ? categorySelect.value : 'other';
+}
+
+/**
+ * Obtiene el valor del campo de prioridad
+ * @returns {string} Valor de la prioridad
+ */
+export function getTaskPriority() {
+  const prioritySelect = $('#task-priority');
+  return prioritySelect ? prioritySelect.value : 'medium';
+}
+
+/**
+ * Obtiene el valor del campo de estado
+ * @returns {string} Valor del estado
+ */
+export function getTaskStatus() {
+  const statusSelect = $('#task-status');
+  return statusSelect ? statusSelect.value : 'pending';
 }
 
 /**

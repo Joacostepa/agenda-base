@@ -15,6 +15,7 @@ service cloud.firestore {
     match /tasks/{taskId} {
       allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
+      allow update: if request.auth != null && request.auth.uid == resource.data.ownerId;
     }
     
     // Permitir listar tareas del usuario autenticado

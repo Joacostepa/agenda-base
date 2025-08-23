@@ -30,6 +30,10 @@ import {
   getTaskInputValue,
   clearTaskDueDate,
   getTaskDueDate,
+  getTaskCategory,
+  getTaskPriority,
+  getTaskStatus,
+  clearTaskForm,
   setLoadingState,
   updatePageTitle,
   renderWelcomeMessage,
@@ -260,6 +264,9 @@ class AgendaApp {
     try {
       const title = getTaskInputValue();
       const dueDate = getTaskDueDate();
+      const category = getTaskCategory();
+      const priority = getTaskPriority();
+      const status = getTaskStatus();
       
       if (!title || title.trim().length === 0) {
         this.showInputError('El título de la tarea no puede estar vacío');
@@ -267,9 +274,10 @@ class AgendaApp {
       }
 
       setLoadingState(true);
-      await addTask(title.trim(), dueDate);
+      await addTask(title.trim(), dueDate, category, priority, status);
       clearTaskInput();
       clearTaskDueDate();
+      clearTaskForm();
       
     } catch (error) {
       console.error('Error al agregar tarea:', error);

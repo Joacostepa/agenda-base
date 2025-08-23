@@ -207,7 +207,7 @@
           
           <!-- Formulario de tareas -->
           <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div class="md:col-span-2">
                 <label for="task-title" class="block text-sm font-medium text-gray-700 mb-2">
                   Título de la tarea
@@ -222,6 +222,58 @@
                 <p class="mt-1 text-xs text-gray-500">
                   Presioná Enter o hacé clic en Agregar
                 </p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div>
+                <label for="task-category" class="block text-sm font-medium text-gray-700 mb-2">
+                  Categoría
+                </label>
+                <select 
+                  id="task-category" 
+                  class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-200"
+                >
+                  <option value="other">📌 Otros</option>
+                  <option value="work">💼 Trabajo</option>
+                  <option value="personal">👤 Personal</option>
+                  <option value="health">🏥 Salud</option>
+                  <option value="finance">💰 Finanzas</option>
+                  <option value="home">🏠 Hogar</option>
+                  <option value="study">📚 Estudio</option>
+                  <option value="shopping">🛒 Compras</option>
+                  <option value="travel">✈️ Viajes</option>
+                </select>
+              </div>
+              
+              <div>
+                <label for="task-priority" class="block text-sm font-medium text-gray-700 mb-2">
+                  Prioridad
+                </label>
+                <select 
+                  id="task-priority" 
+                  class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-200"
+                >
+                  <option value="low">🔽 Baja</option>
+                  <option value="medium" selected>➡️ Media</option>
+                  <option value="high">🔼 Alta</option>
+                  <option value="urgent">🚨 Urgente</option>
+                </select>
+              </div>
+              
+              <div>
+                <label for="task-status" class="block text-sm font-medium text-gray-700 mb-2">
+                  Estado
+                </label>
+                <select 
+                  id="task-status" 
+                  class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-200"
+                >
+                  <option value="pending" selected>⏳ Pendiente</option>
+                  <option value="in-progress">🔄 En Progreso</option>
+                  <option value="completed">✅ Completada</option>
+                  <option value="cancelled">❌ Cancelada</option>
+                </select>
               </div>
               
               <div>

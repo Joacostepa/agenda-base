@@ -111,9 +111,13 @@ export async function fetchFirestoreTasks(userId) {
  * Agrega una nueva tarea en Firestore
  * @param {string} userId - ID del usuario
  * @param {string} title - Título de la tarea
+ * @param {string|null} dueDate - Fecha de vencimiento (opcional)
+ * @param {string} category - Categoría de la tarea (opcional)
+ * @param {string} priority - Prioridad de la tarea (opcional)
+ * @param {string} status - Estado de la tarea (opcional)
  * @returns {Promise<Object>} Tarea creada
  */
-export async function addFirestoreTask(userId, title, dueDate = null) {
+export async function addFirestoreTask(userId, title, dueDate = null, category = 'other', priority = 'medium', status = 'pending') {
   if (!Firebase) {
     throw new Error('Firebase no está inicializado');
   }
@@ -126,7 +130,10 @@ export async function addFirestoreTask(userId, title, dueDate = null) {
       title,
       done: false,
       createdAt: Date.now(),
-      dueDate: dueDate ? new Date(dueDate).getTime() : null
+      dueDate: dueDate ? new Date(dueDate).getTime() : null,
+      category,
+      priority,
+      status
     });
 
     return {
@@ -135,7 +142,10 @@ export async function addFirestoreTask(userId, title, dueDate = null) {
       title,
       done: false,
       createdAt: Date.now(),
-      dueDate: dueDate ? new Date(dueDate).getTime() : null
+      dueDate: dueDate ? new Date(dueDate).getTime() : null,
+      category,
+      priority,
+      status
     };
   } catch (error) {
     console.error('Error al agregar tarea en Firestore:', error);
