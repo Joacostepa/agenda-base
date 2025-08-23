@@ -315,54 +315,6 @@ export async function removeTask(id) {
 }
 
 /**
- * Actualiza una tarea existente
- * @param {string} id - ID de la tarea
- * @param {Object} updates - Campos a actualizar
- * @returns {Promise<Object|null>} Tarea actualizada o null si no se encuentra
- */
-export async function updateTask(id, updates) {
-  const userId = getCurrentUserId();
-  const mode = getCurrentUserMode();
-  
-  if (!userId || !mode) {
-    throw new Error('Usuario no autenticado');
-  }
-
-  try {
-    let updatedTask;
-    
-    if (mode === 'guest') {
-      updatedTask = localStore.update(userId, id, updates);
-      if (updatedTask) {
-        const index = tasks.findIndex(t => t.id === id);
-        if (index > -1) {
-          tasks[index] = updatedTask;
-        }
-      }
-    } else if (mode === 'firebase') {
-      updatedTask = await updateFirestoreTask(userId, id, updates);
-      if (updatedTask) {
-        const index = tasks.findIndex(t => t.id === id);
-        if (index > -1) {
-          tasks[index] = updatedTask;
-        }
-      }
-    }
-    
-    if (updatedTask) {
-      notifyTasksChange();
-      toast('Tarea actualizada correctamente');
-    }
-    
-    return updatedTask;
-  } catch (error) {
-    console.error('Error al actualizar tarea:', error);
-    toast('Error al actualizar la tarea');
-    throw error;
-  }
-}
-
-/**
  * Obtiene estadísticas de las tareas del usuario actual
  * @returns {Object} Estadísticas de las tareas
  */
@@ -371,7 +323,23 @@ export function getTasksStats() {
   const completed = tasks.filter(t => t.done).length;
   const pending = total - completed;
   
-  return { total, completed, pending };
+  // Calcular tareas vencidas
+  const now = Date.now();
+  const overdue = tasks.filter(t => !t.done && t.dueDate && t.dueDate < now).length;
+  
+  // Calcular tareas que vencen hoy
+  const today = new Date();
+  const dueToday = tasks.filter(t => !t.done && t.dueDate && 
+    new Date(t.dueDate).toDateString() === today.toDateString()
+  ).length;
+  
+  // Calcular tareas que vencen pronto (próximos 3 días)
+  const threeDaysFromNow = now + (3 * 24 * 60 * 60 * 1000);
+  const dueSoon = tasks.filter(t => !t.done && t.dueDate && 
+    t.dueDate > now && t.dueDate <= threeDaysFromNow
+  ).length;
+  
+  return { total, completed, pending, overdue, dueToday, dueSoon };
 }
 
 /**
@@ -387,6 +355,21 @@ export function filterTasks(filters = {}) {
     filteredTasks = filteredTasks.filter(t => t.done === filters.done);
   }
   
+  // Filtro por categoría
+  if (filters.category) {
+    filteredTasks = filteredTasks.filter(t => t.category === filters.category);
+  }
+  
+  // Filtro por prioridad
+  if (filters.priority) {
+    filteredTasks = filteredTasks.filter(t => t.priority === filters.priority);
+  }
+  
+  // Filtro por estado
+  if (filters.status) {
+    filteredTasks = filteredTasks.filter(t => t.status === filters.status);
+  }
+  
   // Filtro por texto
   if (filters.search) {
     const searchTerm = filters.search.toLowerCase();
@@ -400,6 +383,16 @@ export function filterTasks(filters = {}) {
     filteredTasks.sort((a, b) => b.createdAt - a.createdAt);
   } else if (filters.sortBy === 'title') {
     filteredTasks.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (filters.sortBy === 'priority') {
+    const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
+    filteredTasks.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+  } else if (filters.sortBy === 'dueDate') {
+    filteredTasks.sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return a.dueDate - b.dueDate;
+    });
   }
   
   return filteredTasks;
@@ -421,7 +414,7 @@ export async function clearAllTasks() {
     if (mode === 'guest') {
       localStore.clear(userId);
     } else if (mode === 'firebase') {
-      // Eliminar tareas una por una en Firebase
+      // Eliminar todas las tareas de Firestore
       for (const task of tasks) {
         await removeFirestoreTask(userId, task.id);
       }
