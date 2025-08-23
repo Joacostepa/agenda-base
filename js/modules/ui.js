@@ -436,6 +436,127 @@ export function renderUsers(users) {
 }
 
 /**
+ * Renderiza las tareas prioritarias (vencidas + de hoy)
+ * @param {Array} tasks - Lista de tareas
+ */
+export function renderPriorityTasks(tasks) {
+  const priorityList = $('#priority-tasks-list');
+  const priorityEmpty = $('#priority-tasks-empty');
+  
+  if (!priorityList || !priorityEmpty) return;
+  
+  // Filtrar tareas prioritarias
+  const now = Date.now();
+  const today = new Date().toDateString();
+  
+  const priorityTasks = tasks.filter(task => {
+    if (task.done) return false; // No mostrar tareas completadas
+    
+    if (task.dueDate) {
+      const dueDate = new Date(task.dueDate);
+      const isOverdue = dueDate.getTime() < now;
+      const isDueToday = dueDate.toDateString() === today;
+      return isOverdue || isDueToday;
+    }
+    
+    return false;
+  });
+  
+  // Limpiar lista actual
+  priorityList.innerHTML = '';
+  
+  // Mostrar estado vacío si no hay tareas prioritarias
+  if (priorityTasks.length === 0) {
+    priorityEmpty.classList.remove('hidden');
+    return;
+  }
+  
+  // Ocultar estado vacío
+  priorityEmpty.classList.add('hidden');
+  
+  // Ordenar: primero vencidas, luego las de hoy
+  priorityTasks.sort((a, b) => {
+    if (!a.dueDate && !b.dueDate) return 0;
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
+    
+    const aIsOverdue = a.dueDate < now;
+    const bIsOverdue = b.dueDate < now;
+    
+    if (aIsOverdue && !bIsOverdue) return -1;
+    if (!aIsOverdue && bIsOverdue) return 1;
+    
+    return a.dueDate - b.dueDate;
+  });
+  
+  // Renderizar cada tarea prioritaria
+  priorityTasks.forEach(task => {
+    const taskElement = createPriorityTaskElement(task);
+    priorityList.appendChild(taskElement);
+  });
+}
+
+/**
+ * Crea un elemento DOM para una tarea prioritaria
+ * @param {Object} task - Objeto tarea
+ * @returns {HTMLElement} Elemento DOM de la tarea prioritaria
+ */
+function createPriorityTaskElement(task) {
+  const div = document.createElement('div');
+  div.className = 'flex items-center justify-between gap-4 p-4 hover:bg-orange-50 transition-colors';
+  
+  // Contenedor izquierdo (checkbox + título + fecha)
+  const left = document.createElement('div');
+  left.className = 'flex items-center gap-3 flex-1';
+  
+  // Checkbox
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.checked = !!task.done;
+  checkbox.className = 'h-5 w-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 cursor-pointer';
+  checkbox.addEventListener('change', () => {
+    window.dispatchEvent(new CustomEvent('task-toggle', { detail: { taskId: task.id } }));
+  });
+  
+  // Título de la tarea
+  const title = document.createElement('span');
+  title.className = `text-sm flex-1 ${task.done ? 'line-through text-gray-400' : 'font-medium'}`;
+  title.textContent = task.title;
+  
+  // Fecha de vencimiento con indicador de urgencia
+  if (task.dueDate) {
+    const dueDate = document.createElement('span');
+    const now = Date.now();
+    const isOverdue = !task.done && task.dueDate < now;
+    
+    dueDate.className = `text-xs px-2 py-1 rounded-full font-medium ${
+      isOverdue ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-orange-100 text-orange-700 border border-orange-200'
+    }`;
+    
+    dueDate.textContent = isOverdue 
+      ? `🚨 Vencida ${new Date(task.dueDate).toLocaleDateString('es-AR', { month: 'short', day: 'numeric' })}`
+      : `⏰ Hoy ${new Date(task.dueDate).toLocaleDateString('es-AR', { month: 'short', day: 'numeric' })}`;
+    
+    left.append(checkbox, title, dueDate);
+  } else {
+    left.append(checkbox, title);
+  }
+  
+  // Botón eliminar
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'rounded-md border px-2.5 py-1.5 text-sm text-red-600 border-red-200 hover:bg-red-50 transition-colors';
+  deleteBtn.textContent = 'Eliminar';
+  deleteBtn.addEventListener('click', () => {
+    if (confirm('¿Estás seguro de que querés eliminar esta tarea?')) {
+      window.dispatchEvent(new CustomEvent('task-delete', { detail: { taskId: task.id } }));
+    }
+  });
+  
+  div.append(left, deleteBtn);
+  return div;
+}
+
+/**
  * Crea un elemento DOM para un usuario individual
  * @param {Object} user - Objeto usuario
  * @returns {HTMLElement} Elemento DOM del usuario
@@ -505,4 +626,51 @@ export function setupUserSearch(onSearch) {
     const query = e.target.value.trim();
     onSearch(query);
   });
+}
+
+/**
+ * Muestra el modal de configuración
+ */
+export function showSettingsModal() {
+  const modal = $('#settings-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+/**
+ * Oculta el modal de configuración
+ */
+export function hideSettingsModal() {
+  const modal = $('#settings-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+}
+
+/**
+ * Configura los event listeners del modal de configuración
+ */
+export function setupSettingsModal() {
+  const settingsBtn = $('#btn-settings');
+  const closeBtn = $('#btn-close-settings');
+  const modal = $('#settings-modal');
+  
+  if (settingsBtn) {
+    settingsBtn.addEventListener('click', showSettingsModal);
+  }
+  
+  if (closeBtn) {
+    closeBtn.addEventListener('click', hideSettingsModal);
+  }
+  
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        hideSettingsModal();
+      }
+    });
+  }
 }

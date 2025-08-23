@@ -37,7 +37,9 @@ import {
   updatePageTitle,
   renderWelcomeMessage,
   renderUsers,
-  setupUserSearch
+  renderPriorityTasks,
+  setupUserSearch,
+  setupSettingsModal
 } from './modules/ui.js';
 import { $ } from './utils/helpers.js';
 
@@ -116,6 +118,9 @@ class AgendaApp {
     window.addEventListener('user-logout', this.handleUserLogout.bind(this));
     window.addEventListener('task-toggle', (e) => this.handleTaskToggle(e.detail.taskId));
     window.addEventListener('task-delete', (e) => this.handleTaskDelete(e.detail.taskId));
+    
+    // Configurar modal de configuración
+    setupSettingsModal();
   }
 
   /**
@@ -133,7 +138,8 @@ class AgendaApp {
 
     // Listener de cambios en las tareas
     onTasksChange((tasks) => {
-      renderTasks();
+      renderTasks(tasks);
+      renderPriorityTasks(tasks);
       this.updateTaskCount(tasks.length);
     });
 
