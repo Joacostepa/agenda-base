@@ -18,8 +18,7 @@ import {
 import { 
   loadUsers, 
   onUsersChange, 
-  searchUsers,
-  setupUserSearch 
+  searchUsers
 } from './modules/users.js';
 import { 
   initUI, 
