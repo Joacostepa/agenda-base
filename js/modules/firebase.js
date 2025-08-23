@@ -31,7 +31,7 @@ export async function tryInitFirebase() {
     const [
       { initializeApp },
       { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut },
-      { getFirestore, collection, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, getDocs }
+      { getFirestore, collection, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, getDocs, setDoc }
     ] = await Promise.all([
       import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
       import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'),
@@ -57,6 +57,7 @@ export async function tryInitFirebase() {
         deleteDoc,
         doc,
         getDocs,
+        setDoc,
         signInWithPopup,
         onAuthStateChanged,
         signOut
