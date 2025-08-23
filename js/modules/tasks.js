@@ -86,9 +86,10 @@ export async function loadTasks() {
 /**
  * Agrega una nueva tarea
  * @param {string} title - Título de la tarea
+ * @param {string|null} dueDate - Fecha de vencimiento (opcional)
  * @returns {Promise<Object>} Tarea creada
  */
-export async function addTask(title) {
+export async function addTask(title, dueDate = null) {
   const userId = getCurrentUserId();
   const mode = getCurrentUserMode();
   
@@ -104,10 +105,10 @@ export async function addTask(title) {
     let newTask;
     
     if (mode === 'guest') {
-      newTask = localStore.add(userId, title.trim());
+      newTask = localStore.add(userId, title.trim(), dueDate);
       tasks.unshift(newTask);
     } else if (mode === 'firebase') {
-      newTask = await addFirestoreTask(userId, title.trim());
+      newTask = await addFirestoreTask(userId, title.trim(), dueDate);
       tasks.unshift(newTask);
     }
     

@@ -116,15 +116,28 @@ function createTaskElement(task) {
   title.className = `text-sm flex-1 ${task.done ? 'line-through text-gray-400' : ''}`;
   title.textContent = task.title;
   
-  // Fecha de creación (opcional)
-  const date = document.createElement('span');
-  date.className = 'text-xs text-gray-400 hidden sm:block';
-  date.textContent = new Date(task.createdAt).toLocaleDateString('es-AR', {
-    month: 'short',
-    day: 'numeric'
-  });
-  
-  left.append(checkbox, title, date);
+  // Fecha de vencimiento (si existe)
+  if (task.dueDate) {
+    const dueDate = document.createElement('span');
+    const now = Date.now();
+    const isOverdue = !task.done && task.dueDate < now;
+    const isDueToday = !task.done && new Date(task.dueDate).toDateString() === new Date().toDateString();
+    
+    dueDate.className = `text-xs px-2 py-1 rounded-full ${
+      isOverdue ? 'bg-red-100 text-red-700' :
+      isDueToday ? 'bg-orange-100 text-orange-700' :
+      'bg-blue-100 text-blue-700'
+    }`;
+    
+    dueDate.textContent = new Date(task.dueDate).toLocaleDateString('es-AR', {
+      month: 'short',
+      day: 'numeric'
+    });
+    
+    left.append(checkbox, title, dueDate);
+  } else {
+    left.append(checkbox, title);
+  }
   
   // Botón eliminar
   const deleteBtn = document.createElement('button');
@@ -150,18 +163,30 @@ export function renderTaskStats(container) {
   const stats = getTasksStats();
   
   container.innerHTML = `
-    <div class="grid grid-cols-3 gap-4 text-center">
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-3 text-center">
       <div class="bg-blue-50 p-3 rounded-lg">
-        <div class="text-2xl font-bold text-blue-600">${stats.total}</div>
-        <div class="text-sm text-blue-500">Total</div>
+        <div class="text-xl font-bold text-blue-600">${stats.total}</div>
+        <div class="text-xs text-blue-500">Total</div>
       </div>
       <div class="bg-green-50 p-3 rounded-lg">
-        <div class="text-2xl font-bold text-green-600">${stats.completed}</div>
-        <div class="text-sm text-green-500">Completadas</div>
+        <div class="text-xl font-bold text-green-600">${stats.completed}</div>
+        <div class="text-xs text-green-500">Completadas</div>
       </div>
       <div class="bg-yellow-50 p-3 rounded-lg">
-        <div class="text-2xl font-bold text-yellow-600">${stats.pending}</div>
-        <div class="text-sm text-yellow-500">Pendientes</div>
+        <div class="text-xl font-bold text-yellow-600">${stats.pending}</div>
+        <div class="text-xs text-yellow-500">Pendientes</div>
+      </div>
+      <div class="bg-red-50 p-3 rounded-lg">
+        <div class="text-xl font-bold text-red-600">${stats.overdue}</div>
+        <div class="text-xs text-red-500">Vencidas</div>
+      </div>
+      <div class="bg-orange-50 p-3 rounded-lg">
+        <div class="text-xl font-bold text-orange-600">${stats.dueToday}</div>
+        <div class="text-xs text-orange-500">Vencen hoy</div>
+      </div>
+      <div class="bg-purple-50 p-3 rounded-lg">
+        <div class="text-xl font-bold text-purple-600">${stats.dueSoon}</div>
+        <div class="text-xs text-purple-500">Vencen pronto</div>
       </div>
     </div>
   `;
@@ -213,6 +238,25 @@ export function setTaskInputValue(value) {
   if (elements.inputTitle) {
     elements.inputTitle.value = value;
   }
+}
+
+/**
+ * Limpia el campo de fecha de vencimiento
+ */
+export function clearTaskDueDate() {
+  const dueDateInput = $('#task-due-date');
+  if (dueDateInput) {
+    dueDateInput.value = '';
+  }
+}
+
+/**
+ * Obtiene el valor del campo de fecha de vencimiento
+ * @returns {string} Valor de la fecha o string vacío
+ */
+export function getTaskDueDate() {
+  const dueDateInput = $('#task-due-date');
+  return dueDateInput ? dueDateInput.value : '';
 }
 
 /**

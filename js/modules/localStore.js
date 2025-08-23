@@ -51,13 +51,14 @@ export class LocalStore {
    * @param {string} title - Título de la tarea
    * @returns {Object} Tarea creada
    */
-  add(userId, title) {
+  add(userId, title, dueDate = null) {
     const tasks = this.load(userId);
     const item = {
       id: this._generateId(),
       title,
       done: false,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      dueDate: dueDate ? new Date(dueDate).getTime() : null
     };
     tasks.unshift(item);
     this.save(userId, tasks);
@@ -144,6 +145,37 @@ export class LocalStore {
     const completed = tasks.filter(t => t.done).length;
     const pending = total - completed;
     
-    return { total, completed, pending };
+    // Estadísticas de vencimiento
+    const now = Date.now();
+    const overdue = tasks.filter(t => !t.done && t.dueDate && t.dueDate < now).length;
+    const dueToday = tasks.filter(t => !t.done && t.dueDate && this._isToday(t.dueDate)).length;
+    const dueSoon = tasks.filter(t => !t.done && t.dueDate && this._isDueSoon(t.dueDate)).length;
+    
+    return { total, completed, pending, overdue, dueToday, dueSoon };
+  }
+
+  /**
+   * Verifica si una fecha es hoy
+   * @param {number} timestamp - Timestamp a verificar
+   * @returns {boolean} true si es hoy
+   * @private
+   */
+  _isToday(timestamp) {
+    const today = new Date();
+    const date = new Date(timestamp);
+    return today.toDateString() === date.toDateString();
+  }
+
+  /**
+   * Verifica si una tarea vence pronto (en las próximas 24 horas)
+   * @param {number} timestamp - Timestamp a verificar
+   * @returns {boolean} true si vence pronto
+   * @private
+   */
+  _isDueSoon(timestamp) {
+    const now = Date.now();
+    const dueDate = timestamp;
+    const oneDay = 24 * 60 * 60 * 1000;
+    return dueDate > now && dueDate <= now + oneDay;
   }
 }

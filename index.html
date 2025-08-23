@@ -154,8 +154,8 @@
           
           <!-- Formulario de tareas -->
           <div class="p-6">
-            <div class="flex items-end gap-4">
-              <div class="flex-1">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
                 <label for="task-title" class="block text-sm font-medium text-gray-700 mb-2">
                   Título de la tarea
                 </label>
@@ -171,11 +171,27 @@
                 </p>
               </div>
               
+              <div>
+                <label for="task-due-date" class="block text-sm font-medium text-gray-700 mb-2">
+                  Vence el (opcional)
+                </label>
+                <input 
+                  id="task-due-date" 
+                  type="date" 
+                  class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-200" 
+                />
+                <p class="mt-1 text-xs text-gray-500">
+                  Fecha límite
+                </p>
+              </div>
+            </div>
+            
+            <div class="mt-4 flex justify-end">
               <button 
                 id="btn-add-task" 
                 class="h-12 px-6 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-semibold hover:from-brand-600 hover:to-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transform hover:scale-105 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                ✨ Agregar
+                ✨ Agregar Tarea
               </button>
             </div>
           </div>

@@ -236,6 +236,7 @@ class AgendaApp {
   async handleAddTask() {
     try {
       const title = getTaskInputValue();
+      const dueDate = getTaskDueDate();
       
       if (!title || title.trim().length === 0) {
         this.showInputError('El título de la tarea no puede estar vacío');
@@ -243,8 +244,9 @@ class AgendaApp {
       }
 
       setLoadingState(true);
-      await addTask(title.trim());
+      await addTask(title.trim(), dueDate);
       clearTaskInput();
+      clearTaskDueDate();
       
     } catch (error) {
       console.error('Error al agregar tarea:', error);
