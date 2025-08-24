@@ -41,6 +41,7 @@ import {
   setupUserSearch,
   setupSettingsModal
 } from './modules/ui.js';
+import { initNavigation } from './modules/navigation.js';
 import { $ } from './utils/helpers.js';
 
 /**
@@ -63,6 +64,9 @@ class AgendaApp {
       
       // Inicializar UI
       initUI();
+      
+      // Inicializar navegación
+      initNavigation();
       
       // Configurar event listeners
       this.setupEventListeners();
@@ -118,6 +122,7 @@ class AgendaApp {
     window.addEventListener('user-logout', this.handleUserLogout.bind(this));
     window.addEventListener('task-toggle', (e) => this.handleTaskToggle(e.detail.taskId));
     window.addEventListener('task-delete', (e) => this.handleTaskDelete(e.detail.taskId));
+    window.addEventListener('project-changed', (e) => this.handleProjectChange(e.detail));
     
     // El modal de configuración se configurará después de renderizar el usuario
   }
@@ -313,6 +318,19 @@ class AgendaApp {
     } catch (error) {
       console.error('Error al eliminar tarea:', error);
       this.showError('Error al eliminar la tarea');
+    }
+  }
+
+  /**
+   * Maneja el cambio de proyecto
+   */
+  handleProjectChange(projectData) {
+    try {
+      console.log('🔄 Cambiando a proyecto:', projectData.project.name);
+      // Aquí se pueden agregar acciones adicionales cuando cambie el proyecto
+      // Por ejemplo, filtrar tareas por proyecto, cambiar el título de la página, etc.
+    } catch (error) {
+      console.error('Error al cambiar proyecto:', error);
     }
   }
 

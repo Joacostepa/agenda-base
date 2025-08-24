@@ -29,3 +29,62 @@
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* Estilos para la barra lateral */
+.sidebar-collapsed {
+  transform: translateX(-100%);
+}
+
+@media (max-width: 1024px) {
+  #sidebar {
+    position: fixed;
+    z-index: 40;
+    height: 100vh;
+  }
+  
+  .sidebar-collapsed {
+    transform: translateX(-100%);
+  }
+}
+
+/* Estilos para proyectos activos */
+.project-nav-item.active {
+  background-color: rgb(55 65 81);
+  color: white;
+}
+
+.project-nav-item.active .project-count {
+  background-color: rgb(59 130 246);
+}
+
+/* Transiciones suaves */
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Estilos para botones de acción en hover */
+.group:hover .group-hover-action {
+  display: flex;
+}
+
+/* Animaciones para botones de acción */
+.edit-project-btn,
+.delete-project-btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.edit-project-btn:hover {
+  transform: scale(1.1);
+}
+
+.delete-project-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Colores de proyectos */
+.bg-blue-500 { background-color: rgb(59 130 246); }
+.bg-green-500 { background-color: rgb(34 197 94); }
+.bg-purple-500 { background-color: rgb(168 85 247); }
+.bg-orange-500 { background-color: rgb(249 115 22); }
+.bg-red-500 { background-color: rgb(239 68 68); }
+.bg-yellow-500 { background-color: rgb(234 179 8); }

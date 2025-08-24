@@ -76,10 +76,93 @@
     </div>
   </header>
 
-  <!-- Contenedor principal -->
-  <main class="max-w-5xl mx-auto px-4 py-6">
-    
-    <!-- Vista de Login -->
+  <!-- Contenedor principal con barra lateral -->
+  <div class="flex min-h-screen">
+    <!-- Barra lateral -->
+    <aside id="sidebar" class="w-64 bg-gray-900 text-white flex-shrink-0 transition-all duration-300">
+      <div class="p-4">
+        <!-- Logo y título -->
+        <div class="flex items-center gap-3 mb-8">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+            📝
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Agenda Base</h2>
+            <p class="text-xs text-gray-400">Gestión por proyectos</p>
+          </div>
+        </div>
+
+        <!-- Navegación principal -->
+        <nav class="space-y-6">
+          <!-- Listas/Proyectos -->
+          <div>
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Listas</h3>
+            <ul class="space-y-2">
+              <li>
+                <button class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors project-nav-item active" data-project="inbox">
+                  <span class="flex items-center gap-3">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    Buzón de entrada
+                  </span>
+                  <span class="text-xs bg-gray-700 px-2 py-1 rounded-full project-count" data-project="inbox">0</span>
+                </button>
+              </li>
+              <!-- Las listas personalizadas se agregarán dinámicamente aquí -->
+            </ul>
+          </div>
+
+          <!-- Acciones rápidas -->
+          <div>
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Acciones</h3>
+            <ul class="space-y-2">
+              <li>
+                <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors" id="btn-new-project">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Nueva Lista
+                </button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Botón colapsar en móviles -->
+      <button id="btn-toggle-sidebar" class="lg:hidden absolute top-4 right-4 p-2 rounded-lg bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </aside>
+
+        <!-- Contenido principal -->
+    <main class="flex-1 bg-gray-50">
+      <!-- Header del contenido -->
+      <header class="bg-white border-b px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 id="current-project-title" class="text-2xl font-bold text-gray-900">Buzón de entrada</h1>
+            <p id="current-project-subtitle" class="text-sm text-gray-600">Tareas sin categorizar</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button 
+              id="btn-settings" 
+              class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              title="Configuración"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="max-w-4xl mx-auto px-6 py-6">
+      
+      <!-- Vista de Login -->
     <section id="view-login" class="hidden">
       <div class="max-w-md mx-auto">
         <!-- Mensaje de bienvenida -->
@@ -292,7 +375,9 @@
         </div>
       </div>
     </section>
-  </main>
+      </div>
+    </main>
+  </div>
 
   <!-- Footer -->
   <footer class="bg-white border-t mt-12">
@@ -305,6 +390,89 @@
       </div>
     </div>
   </footer>
+
+  <!-- Modal de nueva lista -->
+  <div id="new-project-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white rounded-2xl shadow-xl max-w-md w-full">
+        <!-- Header del modal -->
+        <div class="bg-gradient-to-r from-brand-50 to-brand-100 px-6 py-4 border-b border-brand-200">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-brand-800">✨ Nueva Lista</h3>
+            <button 
+              id="btn-close-new-project" 
+              class="p-2 rounded-lg text-brand-400 hover:text-brand-600 hover:bg-brand-100 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Formulario -->
+        <div class="p-6">
+          <div class="space-y-4">
+            <div>
+              <label for="new-project-name" class="block text-sm font-medium text-gray-700 mb-2">
+                Nombre de la lista
+              </label>
+              <input 
+                id="new-project-name" 
+                type="text" 
+                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-200" 
+                placeholder="Ej: Trabajo, Casa, Estudio..."
+              />
+            </div>
+            
+            <div>
+              <label for="new-project-description" class="block text-sm font-medium text-gray-700 mb-2">
+                Descripción (opcional)
+              </label>
+              <input 
+                id="new-project-description" 
+                type="text" 
+                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-200" 
+                placeholder="Breve descripción de la lista..."
+              />
+            </div>
+            
+            <div>
+              <label for="new-project-color" class="block text-sm font-medium text-gray-700 mb-2">
+                Color
+              </label>
+              <select 
+                id="new-project-color" 
+                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-200"
+              >
+                <option value="blue">🔵 Azul</option>
+                <option value="green">🟢 Verde</option>
+                <option value="purple">🟣 Púrpura</option>
+                <option value="orange">🟠 Naranja</option>
+                <option value="red">🔴 Rojo</option>
+                <option value="yellow">🟡 Amarillo</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mt-6 flex justify-end gap-3">
+            <button 
+              id="btn-cancel-new-project" 
+              class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              id="btn-create-new-project" 
+              class="px-4 py-2 rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium hover:from-brand-600 hover:to-brand-700 transition-all duration-200"
+            >
+              Crear Lista
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal de configuración -->
   <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
