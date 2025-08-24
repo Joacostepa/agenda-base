@@ -266,7 +266,7 @@ function setupNewProjectModal() {
 /**
  * Crea una nueva lista/proyecto
  */
-function createNewProject() {
+async function createNewProject() {
   const nameInput = $('#new-project-name');
   const descriptionInput = $('#new-project-description');
   const colorSelect = $('#new-project-color');

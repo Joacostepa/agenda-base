@@ -247,9 +247,12 @@ export function renderTaskStats(container) {
  * Muestra la vista de login
  */
 export function showLogin() {
-  if (elements.viewLogin && elements.viewApp) {
-    elements.viewLogin.classList.remove('hidden');
-    elements.viewApp.classList.add('hidden');
+  const viewLogin = $('#view-login');
+  const mainApp = $('#main-app');
+  
+  if (viewLogin && mainApp) {
+    viewLogin.classList.remove('hidden');
+    mainApp.classList.add('hidden');
   }
 }
 
@@ -257,9 +260,14 @@ export function showLogin() {
  * Muestra la vista principal de la aplicación
  */
 export function showApp() {
-  if (elements.viewLogin && elements.viewApp) {
-    elements.viewApp.classList.remove('hidden');
-    elements.viewLogin.classList.add('hidden');
+  const viewLogin = $('#view-login');
+  const mainApp = $('#main-app');
+  const viewApp = $('#view-app');
+  
+  if (viewLogin && mainApp && viewApp) {
+    viewLogin.classList.add('hidden');
+    mainApp.classList.remove('hidden');
+    viewApp.classList.remove('hidden');
   }
 }
 
