@@ -119,8 +119,7 @@ class AgendaApp {
     window.addEventListener('task-toggle', (e) => this.handleTaskToggle(e.detail.taskId));
     window.addEventListener('task-delete', (e) => this.handleTaskDelete(e.detail.taskId));
     
-    // Configurar modal de configuración
-    setupSettingsModal();
+    // El modal de configuración se configurará después de renderizar el usuario
   }
 
   /**

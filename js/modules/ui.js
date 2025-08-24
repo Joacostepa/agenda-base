@@ -73,6 +73,9 @@ export function renderNavUser() {
   });
   
   elements.navUser.append(avatar, name, settingsBtn, logoutBtn);
+  
+  // Configurar el modal de configuración después de crear el botón
+  setupSettingsModal();
 }
 
 /**
